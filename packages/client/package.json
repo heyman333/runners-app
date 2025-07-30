@@ -11,6 +11,8 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/native": "^11.11.0",
     "@expo/vector-icons": "^14.1.0",
     "@react-native-kakao/core": "^2.4.0",
     "@react-native-kakao/user": "^2.4.0",

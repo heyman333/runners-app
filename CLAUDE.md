@@ -29,25 +29,36 @@ The project uses Lerna with npm workspaces for dependency management across pack
 
 ## Architecture Notes
 
-- Client is an Expo app using Expo Router for file-based routing
+- Client is an Expo app using Expo Router for file-based routing with tab-based navigation
 - TypeScript with strict mode enabled
-- Uses React Native with Expo SDK ~53.0
-- Includes Kakao SDK integration for authentication
-- File-based routing with app directory structure
-- Component architecture with themed components (ThemedText, ThemedView)
+- Uses React Native with Expo SDK ~53.0 and React 19.0.0
+- Includes Kakao SDK integration for authentication (initialized in root layout)
+- File-based routing with app directory structure using (tabs) grouped layout
+- Component architecture with themed components (ThemedText, ThemedView) and styled-components via @emotion/native
 - Custom hooks for color scheme and theme handling
+- Uses SafeAreaView for proper screen boundaries on iOS
+- Haptic feedback integration for tab interactions
 
 ## Key Dependencies
 
-- Expo Router for navigation
+- Expo Router for navigation with tab-based layout
 - React Native Reanimated for animations
-- Kakao SDK for authentication
-- Expo modules for native functionality
+- @emotion/native for styled-components
+- Kakao SDK (@react-native-kakao/core, @react-native-kakao/user) for authentication
+- Expo Image for optimized image handling
+- React Native Safe Area Context for screen boundaries
+- React Native Gesture Handler for touch interactions
+- Expo modules for native functionality (blur, haptics, symbols, etc.)
 
 ## Development Notes
 
 - The app directory contains the main application code with file-based routing
-- Components are organized in the components/ directory with a ui/ subdirectory
-- Hooks are in the hooks/ directory for reusable logic
-- Constants like Colors are in the constants/ directory
+- Main navigation uses (tabs) grouped layout with three tabs: index (home), explore, and profile
+- Root layout (_layout.tsx) initializes Kakao SDK and sets up dark theme by default
+- Components are organized in the components/ directory with a ui/ subdirectory for reusable UI components
+- FeedView component system with modular sub-components (ActionView, ContentView, ProfileView, RecordView)
+- Hooks are in the hooks/ directory for reusable logic (color scheme, theme handling)
+- Constants like Colors are in the constants/ directory with dark theme configurations
 - Uses path alias `@/*` pointing to the current directory
+- IconSymbol component uses platform-specific implementations (.ios.tsx files for iOS-specific code)
+- Tab bar uses custom styling with blur effects on iOS and haptic feedback
