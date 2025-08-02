@@ -1,3 +1,4 @@
+import { useAuth } from "@/contexts/AuthContext";
 import styled from "@emotion/native";
 import { Pressable, Text } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
@@ -9,7 +10,7 @@ const Container = styled.View`
   justify-content: space-between;
 `;
 
-const ActionItem = styled(Pressable)`
+const ActionItem = styled.Pressable`
   flex-direction: row;
   align-items: center;
   gap: 4px;
@@ -28,20 +29,45 @@ const ActionItemContainer = styled.View`
 `;
 
 export function ActionView() {
+  const { isAuthenticated, showLoginModal, logout } = useAuth();
+
+  const handleLike = () => {
+    if (!isAuthenticated) {
+      showLoginModal();
+      return;
+    }
+
+    console.log("like");
+  };
+
+  const handleComment = () => {
+    if (!isAuthenticated) {
+      showLoginModal();
+      return;
+    }
+  };
+
+  const handleBookmark = () => {
+    if (!isAuthenticated) {
+      showLoginModal();
+      return;
+    }
+  };
+
   return (
     <Container>
       <ActionItemContainer>
-        <ActionItem>
+        <ActionItem onPress={handleLike}>
           <IconSymbol name="heart" size={24} color="#A0A0A0" />
           <ActionItemText>100</ActionItemText>
         </ActionItem>
-        <ActionItem>
+        <ActionItem onPress={handleComment}>
           <IconSymbol name="message" size={24} color="#A0A0A0" />
           <ActionItemText>24</ActionItemText>
         </ActionItem>
       </ActionItemContainer>
 
-      <Pressable>
+      <Pressable onPress={handleBookmark}>
         <IconSymbol name="bookmark" size={24} color="#A0A0A0" />
       </Pressable>
     </Container>

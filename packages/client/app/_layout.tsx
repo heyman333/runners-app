@@ -4,6 +4,8 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
+import { LoginModal } from "@/components/LoginModal";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 
 export default function RootLayout() {
@@ -12,12 +14,15 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ThemeProvider value={DarkTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider value={DarkTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+        <LoginModal />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
