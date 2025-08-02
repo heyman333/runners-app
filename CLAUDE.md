@@ -62,3 +62,49 @@ The project uses Lerna with npm workspaces for dependency management across pack
 - Uses path alias `@/*` pointing to the current directory
 - IconSymbol component uses platform-specific implementations (.ios.tsx files for iOS-specific code)
 - Tab bar uses custom styling with blur effects on iOS and haptic feedback
+
+## Styling Guidelines
+
+### CSS-in-JS with @emotion/native
+- **ALWAYS use @emotion/native for styling new components** instead of StyleSheet.create()
+- Use styled-components syntax with template literals for better readability and maintainability
+- Define styled components at the top level of the file, outside of the main component function
+- Use TypeScript interfaces for styled component props to ensure type safety
+
+### Styling Conventions
+- **Component naming**: Use PascalCase with "Styled" prefix for styled components (e.g., `StyledContainer`, `StyledHeader`)
+- **Props interfaces**: Create separate interfaces for styled component props with descriptive names (e.g., `StyledContainerProps`)
+- **Theme integration**: Always use `useThemeColor` hook for dynamic theming instead of hardcoded colors
+- **Responsive units**: Use `px` suffix for pixel values in styled-components template literals
+- **Layout properties**: Prefer CSS property names over React Native camelCase (e.g., `flex-direction` over `flexDirection`)
+
+### Example Pattern:
+```typescript
+import styled from '@emotion/native';
+import { useThemeColor } from '@/hooks/useThemeColor';
+
+interface StyledContainerProps {
+  backgroundColor: string;
+}
+
+const StyledContainer = styled.View<StyledContainerProps>`
+  background-color: ${props => props.backgroundColor};
+  padding: 16px;
+  border-radius: 8px;
+`;
+
+export function MyComponent() {
+  const backgroundColor = useThemeColor({}, 'background');
+  
+  return (
+    <StyledContainer backgroundColor={backgroundColor}>
+      {/* content */}
+    </StyledContainer>
+  );
+}
+```
+
+### Migration Priority
+- When updating existing components, migrate from StyleSheet to @emotion/native
+- Maintain existing component APIs and functionality during migration
+- Ensure theme compatibility is preserved
