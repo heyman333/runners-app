@@ -17,7 +17,7 @@ const FABContainer = styled.View`
   position: absolute;
   bottom: 100px;
   right: 20px;
-  z-index: 1000;
+  z-index: 50;
 `;
 
 const StyledFAB = styled(Animated.View)<StyledFABProps>`

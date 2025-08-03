@@ -4,6 +4,7 @@ import {
   BottomSheetModalProvider,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import { Portal } from "@gorhom/portal";
 import { Image } from "expo-image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -19,7 +20,6 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -59,6 +59,7 @@ const Indicator = styled.View`
 const CommentsScrollView = styled(ScrollView)`
   flex: 1;
   background-color: #1f2937;
+  z-index: 1000;
 `;
 
 const CommentInputContainer = styled(Animated.View)`
@@ -114,13 +115,11 @@ export const CommentsBottomSheet = ({ visible, onClose }: Props) => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const insets = useSafeAreaInsets();
 
-  // Tab bar height calculation
-  const tabBarHeight = Platform.OS === "ios" ? 48 : 56;
-  const baseBottomOffset = tabBarHeight + insets.bottom;
+  const baseBottomOffset = insets.bottom;
   const bottomOffset = keyboardHeight > 0 ? keyboardHeight : baseBottomOffset;
 
   // Animation values
-  const opacity = useSharedValue(0);
+  const bottomPosition = useSharedValue(-300);
 
   const handleSheetChanges = useCallback(
     (index: number) => {
@@ -144,7 +143,7 @@ export const CommentsBottomSheet = ({ visible, onClose }: Props) => {
   // Animated style for CommentInputContainer
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: opacity.value,
+      bottom: bottomPosition.value,
     };
   });
 
@@ -175,24 +174,22 @@ export const CommentsBottomSheet = ({ visible, onClose }: Props) => {
     if (visible) {
       bottomSheetModalRef.current?.present();
 
-      opacity.value = withDelay(
-        100,
-        withTiming(1, {
-          duration: 300,
-          easing: Easing.out(Easing.cubic),
-        })
-      );
+      // BottomSheetModal의 기본 애니메이션과 맞춰서 약간 지연 후 시작
+      bottomPosition.value = withTiming(bottomOffset, {
+        duration: 300, // BottomSheetModal과 비슷한 지속시간
+        easing: Easing.elastic(1),
+      });
     } else {
-      opacity.value = withTiming(0, {
-        duration: 200,
-        easing: Easing.in(Easing.cubic),
+      bottomPosition.value = withTiming(-300, {
+        duration: 200, // 조금 더 빠른 종료
+        easing: Easing.elastic(1),
       });
 
       bottomSheetModalRef.current?.dismiss();
     }
-  }, [opacity, visible]);
+  }, [bottomOffset, bottomPosition, visible]);
 
-  return (
+  const content = (
     <BottomSheetModalProvider>
       <BottomSheetModal
         ref={bottomSheetModalRef}
@@ -208,9 +205,15 @@ export const CommentsBottomSheet = ({ visible, onClose }: Props) => {
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
           overflow: "hidden",
+          zIndex: 1000,
+          elevation: 1000,
         }}
         keyboardBehavior="extend"
         keyboardBlurBehavior="none"
+        animationConfigs={{
+          duration: 300,
+          easing: Easing.elastic(1),
+        }}
       >
         <ContentContainer>
           <CommentHeader>
@@ -255,34 +258,29 @@ export const CommentsBottomSheet = ({ visible, onClose }: Props) => {
           </CommentsScrollView>
         </ContentContainer>
       </BottomSheetModal>
-      {visible && (
-        <CommentInputContainer
-          style={[{ bottom: bottomOffset }, animatedStyle]}
-        >
-          <UserProfileImage source="https://placehold.co/32x32" />
-          <InputSection>
-            <CommentInput
-              multiline
-              placeholder="댓글을 입력하세요..."
-              placeholderTextColor="#9CA3AF"
-              value={commentText}
-              onChangeText={handleTextChange}
-              textAlignVertical="top"
-              scrollEnabled={false}
-            />
-          </InputSection>
-          <SendButton
-            disabled={!commentText.trim()}
-            onPress={handleSendComment}
-          >
-            <IconSymbol
-              name="paperplane.fill"
-              size={16}
-              color={commentText.trim() ? "#FFFFFF" : "#9CA3AF"}
-            />
-          </SendButton>
-        </CommentInputContainer>
-      )}
+      <CommentInputContainer style={animatedStyle}>
+        <UserProfileImage source="https://placehold.co/32x32" />
+        <InputSection>
+          <CommentInput
+            multiline
+            placeholder="댓글을 입력하세요..."
+            placeholderTextColor="#9CA3AF"
+            value={commentText}
+            onChangeText={handleTextChange}
+            textAlignVertical="top"
+            scrollEnabled={false}
+          />
+        </InputSection>
+        <SendButton disabled={!commentText.trim()} onPress={handleSendComment}>
+          <IconSymbol
+            name="paperplane.fill"
+            size={16}
+            color={commentText.trim() ? "#FFFFFF" : "#9CA3AF"}
+          />
+        </SendButton>
+      </CommentInputContainer>
     </BottomSheetModalProvider>
   );
+
+  return <Portal>{content}</Portal>;
 };

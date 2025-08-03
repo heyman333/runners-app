@@ -2,11 +2,10 @@ import { CommentsBottomSheet } from "@/components/CommentsBottomSheet";
 import { FeedView } from "@/components/FeedView";
 import { FloatingActionButton } from "@/components/ui/FloatingActionButton";
 import { Header } from "@/components/ui/Header";
+import { useCommentBottomSheet } from "@/stores/commentStore";
 import styled from "@emotion/native";
 import { router } from "expo-router";
-import { useState } from "react";
 import { FlatList, ListRenderItem } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Container = styled.View`
   flex: 1;
@@ -22,8 +21,7 @@ const StyledFlatList = styled(FlatList<FeedItem>)`
 `;
 
 export default function HomeScreen() {
-  const [commentsBottomSheetVisible, setCommentsBottomSheetVisible] =
-    useState(false);
+  const { isOpen, closeCommentSheet } = useCommentBottomSheet();
 
   // Mock data for FlatList
   const feedData: FeedItem[] = [
@@ -33,7 +31,7 @@ export default function HomeScreen() {
   ];
 
   const handleCommentsBottomSheetClose = () => {
-    setCommentsBottomSheetVisible(false);
+    closeCommentSheet();
   };
 
   const handleNotificationPress = () => {
@@ -54,26 +52,24 @@ export default function HomeScreen() {
 
   return (
     <Container>
-      <GestureHandlerRootView>
-        <Header
-          hasNewNotifications={true}
-          hasNewMessages={false}
-          onNotificationPress={handleNotificationPress}
-          onMessagePress={handleMessagePress}
-        />
-        <StyledFlatList
-          data={feedData}
-          renderItem={renderFeedItem}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ gap: 12, paddingBottom: 100 }}
-        />
-        <CommentsBottomSheet
-          visible={commentsBottomSheetVisible}
-          onClose={handleCommentsBottomSheetClose}
-        />
-        <FloatingActionButton onPress={handleCreateFeed} />
-      </GestureHandlerRootView>
+      <Header
+        hasNewNotifications={true}
+        hasNewMessages={false}
+        onNotificationPress={handleNotificationPress}
+        onMessagePress={handleMessagePress}
+      />
+      <StyledFlatList
+        data={feedData}
+        renderItem={renderFeedItem}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: 12, paddingBottom: 100 }}
+      />
+      <FloatingActionButton onPress={handleCreateFeed} />
+      <CommentsBottomSheet
+        visible={isOpen}
+        onClose={handleCommentsBottomSheetClose}
+      />
     </Container>
   );
 }

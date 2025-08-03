@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useCommentBottomSheet } from "@/stores/commentStore";
 import styled from "@emotion/native";
 import { Pressable, Text } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
@@ -29,7 +30,8 @@ const ActionItemContainer = styled.View`
 `;
 
 export function ActionView() {
-  const { isAuthenticated, showLoginModal, logout } = useAuth();
+  const { isAuthenticated, showLoginModal } = useAuth();
+  const { openCommentSheet } = useCommentBottomSheet();
 
   const handleLike = () => {
     if (!isAuthenticated) {
@@ -41,10 +43,7 @@ export function ActionView() {
   };
 
   const handleComment = () => {
-    if (!isAuthenticated) {
-      showLoginModal();
-      return;
-    }
+    openCommentSheet("post-id-123");
   };
 
   const handleBookmark = () => {
