@@ -17,7 +17,7 @@ const ContentContainer = styled.View`
 
 const SectionTitle = styled(Text)<{ color: string }>`
   color: ${(props) => props.color};
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   margin: 0 16px 16px 16px;
 `;
@@ -93,9 +93,9 @@ export default function ExploreScreen() {
   };
 
   const handleFollowPress = (runnerId: string) => {
-    setRunners(prev => 
-      prev.map(runner => 
-        runner.id === runnerId 
+    setRunners((prev) =>
+      prev.map((runner) =>
+        runner.id === runnerId
           ? { ...runner, isFollowing: !runner.isFollowing }
           : runner
       )
@@ -126,10 +126,10 @@ export default function ExploreScreen() {
         onNotificationPress={handleNotificationPress}
         onMessagePress={handleMessagePress}
       />
-      
+
       <ContentContainer>
-        <SectionTitle color={textColor}>근처 러너들</SectionTitle>
-        
+        <SectionTitle color={textColor}>Nearby Runners</SectionTitle>
+
         {runners.length > 0 ? (
           <FlatList
             data={runners}
@@ -141,7 +141,7 @@ export default function ExploreScreen() {
         ) : (
           <EmptyState>
             <EmptyText color={textColor}>
-              근처에서 러닝하는 사람들을 찾을 수 없습니다.{'\n'}
+              근처에서 러닝하는 사람들을 찾을 수 없습니다.{"\n"}
               위치 권한을 확인해보세요.
             </EmptyText>
           </EmptyState>
